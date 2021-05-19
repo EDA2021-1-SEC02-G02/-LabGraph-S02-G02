@@ -23,7 +23,8 @@
  * Dario Correal
  *
  """
-
+import time
+import tracemalloc
 import config as cf
 from App import model
 import csv
@@ -70,12 +71,14 @@ def loadServices(analyzer, servicesfile):
                                 delimiter=",")
     lastservice = None
     for service in input_file:
+
         if lastservice is not None:
             sameservice = lastservice['ServiceNo'] == service['ServiceNo']
             samedirection = lastservice['Direction'] == service['Direction']
             samebusStop = lastservice['BusStopCode'] == service['BusStopCode']
-            if sameservice and samedirection and not samebusStop:
+            if sameservice and samedirection and not samebusStop: # verifica si las condiciioens son True 
                 model.addStopConnection(analyzer, lastservice, service)
+
         lastservice = service
     model.addRouteConnections(analyzer)
     return analyzer
@@ -106,12 +109,29 @@ def connectedComponents(analyzer):
     return model.connectedComponents(analyzer)
 
 
+
+
 def minimumCostPaths(analyzer, initialStation):
     """
     Calcula todos los caminos de costo minimo de initialStation a todas
     las otras estaciones del sistema
+
     """
-    return model.minimumCostPaths(analyzer, initialStation)
+    delta_time = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+
+    sol = model.minimumCostPaths(analyzer, initialStation)
+
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    return delta_time, sol 
+
+
+
 
 
 def hasPath(analyzer, destStation):
@@ -121,11 +141,27 @@ def hasPath(analyzer, destStation):
     return model.hasPath(analyzer, destStation)
 
 
+
+
 def minimumCostPath(analyzer, destStation):
     """
     Retorna el camino de costo minimo desde initialStation a destStation
     """
-    return model.minimumCostPath(analyzer, destStation)
+    delta_time = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+
+    sol = model.minimumCostPath(analyzer, destStation)
+
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+
+    return delta_time, sol 
+
+
 
 
 def servedRoutes(analyzer):
@@ -134,3 +170,10 @@ def servedRoutes(analyzer):
     """
     maxvert, maxdeg = model.servedRoutes(analyzer)
     return maxvert, maxdeg
+
+def getTime():
+    """
+    devuelve el instante tiempo de procesamiento en milisegundos
+    """
+    return float(time.perf_counter()*1000)
+    

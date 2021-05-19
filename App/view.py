@@ -83,7 +83,8 @@ def optionThree(cont):
 
 
 def optionFour(cont, initialStation):
-    controller.minimumCostPaths(cont, initialStation)
+    sol = controller.minimumCostPaths(cont, initialStation)
+    print('Tiempo de ejecucion:', ((sol[0])/1000))
 
 
 def optionFive(cont, destStation):
@@ -94,7 +95,8 @@ def optionFive(cont, destStation):
 
 
 def optionSix(cont, destStation):
-    path = controller.minimumCostPath(cont, destStation)
+    path1 = controller.minimumCostPath(cont, destStation)
+    path = path1[1]
     if path is not None:
         pathlen = stack.size(path)
         print('El camino es de longitud: ' + str(pathlen))
@@ -103,6 +105,7 @@ def optionSix(cont, destStation):
             print(stop)
     else:
         print('No hay camino')
+    print('Tiempo de ejecucion:', ((path1[0])/1000))
 
 
 def optionSeven(cont):
